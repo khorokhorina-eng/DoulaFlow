@@ -18,7 +18,7 @@ struct SettingsScreen: View {
                     if let auth = services.authService {
                         if let session = auth.session {
                             LabeledContent("User") {
-                                Text(session.userId.uuidString.prefix(8))
+                                Text(String(session.userId.uuidString.prefix(8)))
                                     .font(.body.monospaced())
                             }
                         } else {

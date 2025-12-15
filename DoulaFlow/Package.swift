@@ -8,8 +8,8 @@ let package = Package(
         .iOS(.v15)
     ],
     products: [
-        .library(
-            name: "DoulaFlowApp",
+        .executable(
+            name: "BirthPrepPro",
             targets: ["DoulaFlowApp"]
         )
     ],
@@ -18,7 +18,7 @@ let package = Package(
         .package(url: "https://github.com/scinfu/SwiftSoup", from: "2.6.0")
     ],
     targets: [
-        .target(
+        .executableTarget(
             name: "DoulaFlowApp",
             dependencies: [
                 .product(name: "Supabase", package: "supabase-swift"),
