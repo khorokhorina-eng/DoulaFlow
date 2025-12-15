@@ -5,6 +5,7 @@ struct ClientFormView: View {
 
     @State private var draft: Client
     var onSave: (Client) -> Void
+    @State private var computedWeek: Int = 1
 
     init(client: Client, onSave: @escaping (Client) -> Void) {
         _draft = State(initialValue: client)
@@ -21,8 +22,9 @@ struct ClientFormView: View {
 
                 Section("Pregnancy") {
                     DatePicker("EDD", selection: $draft.estimatedDueDate, displayedComponents: [.date])
-                    Stepper(value: $draft.pregnancyWeek, in: 4...42) {
-                        Text("Week \(draft.pregnancyWeek)")
+                    LabeledContent("Week") {
+                        Text("Week \(computedWeek)")
+                            .font(.body.monospacedDigit())
                     }
                     Picker("Status", selection: $draft.status) {
                         ForEach(Client.Status.allCases, id: \.self) { status in
@@ -34,11 +36,16 @@ struct ClientFormView: View {
                 Section("Notes") {
                     TextEditor(text: $draft.notes)
                         .frame(minHeight: 80)
-                    TextEditor(text: Binding(
-                        get: { draft.medicalNotes ?? "" },
-                        set: { draft.medicalNotes = $0 }
-                    ))
-                    .frame(minHeight: 80)
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("Medical notes (optional)")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                        TextEditor(text: Binding(
+                            get: { draft.medicalNotes ?? "" },
+                            set: { draft.medicalNotes = $0 }
+                        ))
+                        .frame(minHeight: 80)
+                    }
                 }
             }
             .navigationTitle("Client")
@@ -48,10 +55,18 @@ struct ClientFormView: View {
                 }
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Save") {
-                        onSave(draft)
+                        var normalized = draft
+                        normalized.pregnancyWeek = computedWeek
+                        onSave(normalized)
                         dismiss()
                     }
                 }
+            }
+            .onAppear {
+                computedWeek = PregnancyWeekCalculator.week(edd: draft.estimatedDueDate)
+            }
+            .onChange(of: draft.estimatedDueDate) { newValue in
+                computedWeek = PregnancyWeekCalculator.week(edd: newValue)
             }
         }
     }

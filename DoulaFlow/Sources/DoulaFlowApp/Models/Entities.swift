@@ -40,6 +40,25 @@ struct BirthPlanSection: Identifiable, Codable, Equatable {
     var id: UUID = UUID()
     var title: String
     var body: String
+
+    enum CodingKeys: String, CodingKey {
+        case id
+        case title
+        case body
+    }
+
+    init(id: UUID = UUID(), title: String, body: String) {
+        self.id = id
+        self.title = title
+        self.body = body
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = (try? container.decode(UUID.self, forKey: .id)) ?? UUID()
+        title = try container.decode(String.self, forKey: .title)
+        body = try container.decode(String.self, forKey: .body)
+    }
 }
 
 struct BirthPlan: Identifiable, Codable, Equatable {
@@ -61,6 +80,28 @@ struct RecommendationAttachment: Identifiable, Codable, Equatable {
     var fileName: String
     var url: URL
     var type: AttachmentType
+
+    enum CodingKeys: String, CodingKey {
+        case id
+        case fileName
+        case url
+        case type
+    }
+
+    init(id: UUID = UUID(), fileName: String, url: URL, type: AttachmentType) {
+        self.id = id
+        self.fileName = fileName
+        self.url = url
+        self.type = type
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = (try? container.decode(UUID.self, forKey: .id)) ?? UUID()
+        fileName = try container.decode(String.self, forKey: .fileName)
+        url = try container.decode(URL.self, forKey: .url)
+        type = try container.decode(AttachmentType.self, forKey: .type)
+    }
 }
 
 struct Recommendation: Identifiable, Codable, Equatable {
@@ -81,7 +122,6 @@ struct PublicLink: Identifiable, Codable, Equatable {
     var disabled: Bool
 
     var shareURL: URL? {
-        guard !token.isEmpty else { return nil }
-        return URL(string: "https://doula.flow.link/c/\(token)")
+        PublicLinkRouting.clientCabinetURL(token: token)
     }
 }

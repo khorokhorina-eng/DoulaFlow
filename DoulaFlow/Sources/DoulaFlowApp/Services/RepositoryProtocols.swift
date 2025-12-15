@@ -4,6 +4,7 @@ protocol ProfileRepository {
     func fetchProfile() async throws -> DoulaProfile
     func saveProfile(_ profile: DoulaProfile) async throws -> DoulaProfile
     func exportProfilePDF(from profile: DoulaProfile) async throws -> URL
+    func generatePublicProfileLink(from profile: DoulaProfile) async throws -> URL
 }
 
 protocol ClientsRepository {
@@ -22,6 +23,8 @@ protocol BirthPlanRepository {
 protocol RecommendationsRepository {
     func fetchRecommendations(for clientId: UUID) async throws -> Recommendation
     func saveRecommendation(_ recommendation: Recommendation) async throws -> Recommendation
+    func uploadAttachment(clientId: UUID, fileURL: URL) async throws -> RecommendationAttachment
+    func deleteAttachment(clientId: UUID, attachmentId: UUID) async throws
 }
 
 protocol PublicLinkRepository {

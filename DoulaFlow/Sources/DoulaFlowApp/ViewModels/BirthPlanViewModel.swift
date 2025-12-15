@@ -41,6 +41,16 @@ final class BirthPlanViewModel: ObservableObject {
         self.plan = plan
     }
 
+    func applyTemplate(_ template: BirthPlanTemplate) {
+        let sections = template.sections.map { BirthPlanSection(title: $0.title, body: $0.body) }
+        if plan == nil {
+            plan = BirthPlan(clientId: clientId, sections: sections, updatedAt: Date())
+        } else {
+            plan?.sections = sections
+            plan?.updatedAt = Date()
+        }
+    }
+
     func save() async {
         guard var plan else { return }
         plan.updatedAt = Date()

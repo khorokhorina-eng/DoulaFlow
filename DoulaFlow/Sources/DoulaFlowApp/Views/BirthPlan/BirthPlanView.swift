@@ -4,6 +4,8 @@ struct BirthPlanView: View {
     @ObservedObject var viewModel: BirthPlanViewModel
     @State private var presentingShare = false
     @State private var exportURL: URL?
+    @State private var isPresentingTemplates = false
+    @State private var templates: [BirthPlanTemplate] = TemplateProvider.loadBirthPlanTemplates()
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -27,6 +29,15 @@ struct BirthPlanView: View {
 
             HStack {
                 Button("Add Section", action: viewModel.addSection)
+                Menu("Template") {
+                    Button("Choose template…") { isPresentingTemplates = true }
+                    Divider()
+                    ForEach(templates) { template in
+                        Button(template.title) {
+                            viewModel.applyTemplate(template)
+                        }
+                    }
+                }
                 Spacer()
                 Button("Save") {
                     Task { await viewModel.save() }
@@ -42,6 +53,25 @@ struct BirthPlanView: View {
         .sheet(isPresented: $presentingShare) {
             if let url = exportURL {
                 ShareSheet(activityItems: [url])
+            }
+        }
+        .sheet(isPresented: $isPresentingTemplates) {
+            NavigationStack {
+                List(templates) { template in
+                    Button {
+                        viewModel.applyTemplate(template)
+                        isPresentingTemplates = false
+                    } label: {
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text(template.title)
+                                .font(.headline)
+                            Text("\(template.sections.count) sections")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                        }
+                    }
+                }
+                .navigationTitle("Birth plan templates")
             }
         }
     }

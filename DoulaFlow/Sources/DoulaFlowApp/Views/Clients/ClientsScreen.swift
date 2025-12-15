@@ -40,16 +40,19 @@ struct ClientsScreen: View {
                 }
             }
             .task { await viewModel.load() }
-            .sheet(item: $selectedClient) { client in
+            .sheet(item: $selectedClient, onDismiss: {
+                Task { await viewModel.load() }
+            }) { client in
                 ClientDetailScreen(client: client, services: services)
             }
             .sheet(isPresented: $isPresentingForm) {
+                let doulaId = services.authService?.session?.userId ?? SampleData.doulaProfile.id
                 ClientFormView(client: Client(
-                    doulaId: SampleData.doulaProfile.id,
+                    doulaId: doulaId,
                     name: "",
                     contactDetails: "",
                     estimatedDueDate: Date(),
-                    pregnancyWeek: 20,
+                    pregnancyWeek: PregnancyWeekCalculator.week(edd: Date()),
                     status: .onboarding,
                     notes: "",
                     medicalNotes: nil

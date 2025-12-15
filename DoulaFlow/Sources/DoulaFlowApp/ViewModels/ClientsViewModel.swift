@@ -25,7 +25,9 @@ final class ClientsViewModel: ObservableObject {
 
     func upsert(client: Client) async {
         do {
-            _ = try await repository.upsertClient(client)
+            var normalized = client
+            normalized.pregnancyWeek = PregnancyWeekCalculator.week(edd: normalized.estimatedDueDate)
+            _ = try await repository.upsertClient(normalized)
             await load()
         } catch {
             errorMessage = error.localizedDescription

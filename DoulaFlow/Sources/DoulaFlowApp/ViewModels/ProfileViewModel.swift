@@ -5,6 +5,7 @@ final class ProfileViewModel: ObservableObject {
     @Published var profile: DoulaProfile = SampleData.doulaProfile
     @Published var isSaving = false
     @Published var exportURL: URL?
+    @Published var publicLinkURL: URL?
     @Published var errorMessage: String?
 
     private let repository: ProfileRepository
@@ -34,6 +35,14 @@ final class ProfileViewModel: ObservableObject {
     func exportPDF() async {
         do {
             exportURL = try await repository.exportProfilePDF(from: profile)
+        } catch {
+            errorMessage = error.localizedDescription
+        }
+    }
+
+    func generatePublicLink() async {
+        do {
+            publicLinkURL = try await repository.generatePublicProfileLink(from: profile)
         } catch {
             errorMessage = error.localizedDescription
         }
