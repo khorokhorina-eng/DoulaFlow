@@ -88,7 +88,18 @@ extension MockDataStore: ProfileRepository {
     func saveProfile(_ profile: DoulaProfile) async throws -> DoulaProfile { updateProfile(profile) }
 
     func exportProfilePDF(from profile: DoulaProfile) async throws -> URL {
-        URL(fileURLWithPath: "/tmp/profile.pdf")
+        try PDFGenerator.makeProfilePDF(profile: profile)
+    }
+
+    func generatePublicProfileLink(from profile: DoulaProfile) async throws -> URL {
+        // Mock fallback: generate a local HTML file and share it.
+        let html = ProfilePublicHTMLBuilder.build(profile: profile)
+        let url = FileManager.default.temporaryDirectory.appendingPathComponent("birthprep-public-profile.html")
+        guard let data = html.data(using: .utf8) else {
+            throw RepositoryError(message: "Failed to encode HTML")
+        }
+        try data.write(to: url, options: [.atomic])
+        return url
     }
 }
 
@@ -99,7 +110,12 @@ extension MockDataStore: ClientsRepository {
 
     func deleteClient(_ clientId: UUID) async throws { delete(clientId: clientId) }
 
-    func exportClientProfile(_ clientId: UUID) async throws -> URL { URL(fileURLWithPath: "/tmp/client-\(clientId).pdf") }
+    func exportClientProfile(_ clientId: UUID) async throws -> URL {
+        guard let client = clients.first(where: { $0.id == clientId }) else {
+            throw RepositoryError(message: "Client not found")
+        }
+        return try PDFGenerator.makeClientProfilePDF(client: client)
+    }
 }
 
 extension MockDataStore: BirthPlanRepository {
@@ -112,7 +128,7 @@ extension MockDataStore: BirthPlanRepository {
     }
 
     func exportBirthPlanPDF(_ plan: BirthPlan) async throws -> URL {
-        URL(fileURLWithPath: "/tmp/birthplan-\(plan.clientId).pdf")
+        try PDFGenerator.makeBirthPlanPDF(plan: plan)
     }
 }
 
@@ -123,6 +139,26 @@ extension MockDataStore: RecommendationsRepository {
 
     func saveRecommendation(_ recommendation: Recommendation) async throws -> Recommendation {
         upsertRecommendation(recommendation)
+    }
+
+    func uploadAttachment(clientId: UUID, fileURL: URL) async throws -> RecommendationAttachment {
+        let ext = fileURL.pathExtension.lowercased()
+        let type: RecommendationAttachment.AttachmentType
+        switch ext {
+        case "pdf":
+            type = .pdf
+        case "png", "jpg", "jpeg", "heic", "gif", "webp":
+            type = .image
+        case "docx":
+            type = .docx
+        default:
+            type = .other
+        }
+        return RecommendationAttachment(fileName: fileURL.lastPathComponent, url: fileURL, type: type)
+    }
+
+    func deleteAttachment(clientId: UUID, attachmentId: UUID) async throws {
+        // No-op for mock; attachments are removed by the caller and persisted via saveRecommendation.
     }
 }
 

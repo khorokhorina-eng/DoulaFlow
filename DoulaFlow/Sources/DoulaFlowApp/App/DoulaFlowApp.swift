@@ -15,13 +15,19 @@ struct DoulaFlowApp: App {
 
     var body: some Scene {
         WindowGroup {
-            RootTabView(services: services)
-                .environmentObject(profileViewModel)
-                .environmentObject(clientsViewModel)
-                .task {
-                    await profileViewModel.load()
-                    await clientsViewModel.load()
+            Group {
+                if let auth = services.authService, auth.session == nil {
+                    SignInScreen(auth: auth)
+                } else {
+                    RootTabView(services: services)
+                        .environmentObject(profileViewModel)
+                        .environmentObject(clientsViewModel)
                 }
+            }
+            .task(id: services.authService?.session?.userId.uuidString ?? "mock") {
+                await profileViewModel.load()
+                await clientsViewModel.load()
+            }
         }
     }
 }

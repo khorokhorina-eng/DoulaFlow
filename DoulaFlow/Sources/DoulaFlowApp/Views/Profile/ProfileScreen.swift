@@ -3,6 +3,8 @@ import SwiftUI
 struct ProfileScreen: View {
     @ObservedObject var viewModel: ProfileViewModel
     @State private var isPresentingExporter = false
+    @State private var isShowingPreview = false
+    @State private var isPresentingPublicLinkShare = false
 
     var body: some View {
         NavigationStack {
@@ -40,9 +42,29 @@ struct ProfileScreen: View {
                         viewModel.profile.certifications.append("")
                     }
                 }
+
+                Section("Sharing") {
+                    if let url = viewModel.publicLinkURL {
+                        Text(url.absoluteString)
+                            .textSelection(.enabled)
+                            .font(.footnote)
+                        Button("Share public link") {
+                            isPresentingPublicLinkShare = true
+                        }
+                    }
+                    Button("Generate public profile link") {
+                        Task {
+                            await viewModel.generatePublicLink()
+                            isPresentingPublicLinkShare = viewModel.publicLinkURL != nil
+                        }
+                    }
+                }
             }
             .navigationTitle("Doula Profile")
             .toolbar {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Button("Preview") { isShowingPreview = true }
+                }
                 ToolbarItemGroup(placement: .primaryAction) {
                     if viewModel.isSaving {
                         ProgressView()
@@ -63,6 +85,16 @@ struct ProfileScreen: View {
             .sheet(isPresented: $isPresentingExporter) {
                 if let url = viewModel.exportURL {
                     ShareSheet(activityItems: [url])
+                }
+            }
+            .sheet(isPresented: $isPresentingPublicLinkShare) {
+                if let url = viewModel.publicLinkURL {
+                    ShareSheet(activityItems: [url])
+                }
+            }
+            .sheet(isPresented: $isShowingPreview) {
+                NavigationStack {
+                    ProfilePreviewScreen(profile: viewModel.profile)
                 }
             }
             .alert("Error", isPresented: Binding(

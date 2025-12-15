@@ -18,9 +18,9 @@ struct RootTabView: View {
                     Label("Clients", systemImage: "person.3")
                 }
 
-            TemplatesScreen()
+            SettingsScreen(services: services)
                 .tabItem {
-                    Label("Templates", systemImage: "list.bullet.rectangle")
+                    Label("Settings", systemImage: "gearshape")
                 }
         }
     }
