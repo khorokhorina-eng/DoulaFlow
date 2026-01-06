@@ -7,7 +7,7 @@ final class SupabaseAuthService: ObservableObject {
     @Published var isBusy: Bool = false
 
     private let http: SupabaseHTTPClient
-    private let keychainService = "BirthPrepPro.Supabase"
+    private let keychainService = "DoulaFlow.Supabase"
     private let keychainAccount = "session"
 
     init(http: SupabaseHTTPClient) {

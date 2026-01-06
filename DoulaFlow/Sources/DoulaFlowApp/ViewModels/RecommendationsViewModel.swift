@@ -70,7 +70,7 @@ final class RecommendationsViewModel: ObservableObject {
 
     func removeAttachment(_ attachment: RecommendationAttachment) async {
         do {
-            try await repository.deleteAttachment(clientId: clientId, attachmentId: attachment.id)
+            try await repository.deleteAttachment(clientId: clientId, attachment: attachment)
             recommendation?.attachments.removeAll { $0.id == attachment.id }
             await save()
         } catch {

@@ -80,19 +80,23 @@ struct RecommendationAttachment: Identifiable, Codable, Equatable {
     var fileName: String
     var url: URL
     var type: AttachmentType
+    /// Optional storage path (bucket-relative). Used to support reliable deletes.
+    var storagePath: String?
 
     enum CodingKeys: String, CodingKey {
         case id
         case fileName
         case url
         case type
+        case storagePath
     }
 
-    init(id: UUID = UUID(), fileName: String, url: URL, type: AttachmentType) {
+    init(id: UUID = UUID(), fileName: String, url: URL, type: AttachmentType, storagePath: String? = nil) {
         self.id = id
         self.fileName = fileName
         self.url = url
         self.type = type
+        self.storagePath = storagePath
     }
 
     init(from decoder: Decoder) throws {
@@ -101,6 +105,7 @@ struct RecommendationAttachment: Identifiable, Codable, Equatable {
         fileName = try container.decode(String.self, forKey: .fileName)
         url = try container.decode(URL.self, forKey: .url)
         type = try container.decode(AttachmentType.self, forKey: .type)
+        storagePath = try? container.decode(String.self, forKey: .storagePath)
     }
 }
 

@@ -74,5 +74,11 @@ struct BirthPlanView: View {
                 .navigationTitle("Birth plan templates")
             }
         }
+        .alert("Error", isPresented: Binding(
+            get: { viewModel.errorMessage != nil },
+            set: { _ in viewModel.errorMessage = nil }
+        ), actions: {}) {
+            Text(viewModel.errorMessage ?? "")
+        }
     }
 }

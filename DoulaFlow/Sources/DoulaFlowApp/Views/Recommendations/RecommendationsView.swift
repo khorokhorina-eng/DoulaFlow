@@ -134,6 +134,12 @@ struct RecommendationsView: View {
                 }
             }
         }
+        .alert("Error", isPresented: Binding(
+            get: { viewModel.errorMessage != nil },
+            set: { _ in viewModel.errorMessage = nil }
+        ), actions: {}) {
+            Text(viewModel.errorMessage ?? "")
+        }
     }
 }
 

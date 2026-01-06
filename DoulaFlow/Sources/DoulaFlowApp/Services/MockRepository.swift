@@ -94,7 +94,7 @@ extension MockDataStore: ProfileRepository {
     func generatePublicProfileLink(from profile: DoulaProfile) async throws -> URL {
         // Mock fallback: generate a local HTML file and share it.
         let html = ProfilePublicHTMLBuilder.build(profile: profile)
-        let url = FileManager.default.temporaryDirectory.appendingPathComponent("birthprep-public-profile.html")
+        let url = FileManager.default.temporaryDirectory.appendingPathComponent("doulaflow-public-profile.html")
         guard let data = html.data(using: .utf8) else {
             throw RepositoryError(message: "Failed to encode HTML")
         }
@@ -154,15 +154,22 @@ extension MockDataStore: RecommendationsRepository {
         default:
             type = .other
         }
-        return RecommendationAttachment(fileName: fileURL.lastPathComponent, url: fileURL, type: type)
+        return RecommendationAttachment(fileName: fileURL.lastPathComponent, url: fileURL, type: type, storagePath: nil)
     }
 
-    func deleteAttachment(clientId: UUID, attachmentId: UUID) async throws {
+    func deleteAttachment(clientId: UUID, attachment: RecommendationAttachment) async throws {
         // No-op for mock; attachments are removed by the caller and persisted via saveRecommendation.
     }
 }
 
 extension MockDataStore: PublicLinkRepository {
+    func fetchActiveLink(for clientId: UUID) async throws -> PublicLink? {
+        publicLinks.values
+            .filter { $0.clientId == clientId && !$0.disabled }
+            .sorted { $0.createdAt > $1.createdAt }
+            .first
+    }
+
     func generateLink(for clientId: UUID) async throws -> PublicLink {
         makeLink(for: clientId)
     }

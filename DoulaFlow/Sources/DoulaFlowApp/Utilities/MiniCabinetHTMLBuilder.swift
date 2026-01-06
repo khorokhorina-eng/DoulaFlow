@@ -49,7 +49,7 @@ enum MiniCabinetHTMLBuilder {
           <meta charset="utf-8" />
           <meta name="viewport" content="width=device-width, initial-scale=1" />
           <meta name="robots" content="noindex,nofollow,noarchive" />
-          <title>\(title) • BirthPrep Pro</title>
+          <title>\(title) • DoulaFlow</title>
           <style>
             :root { color-scheme: light dark; }
             body { margin: 0; font-family: -apple-system, system-ui, Segoe UI, Roboto, Helvetica, Arial, sans-serif; background: #f6f6f8; color: #111; }
@@ -81,7 +81,7 @@ enum MiniCabinetHTMLBuilder {
         <body>
           <div class="wrap">
             <header>
-              <div class="brand">BirthPrep Pro</div>
+              <div class="brand">DoulaFlow</div>
               <h1>\(title)</h1>
               <div class="meta">EDD: \(escape(edd)) • Week \(client.pregnancyWeek)</div>
             </header>

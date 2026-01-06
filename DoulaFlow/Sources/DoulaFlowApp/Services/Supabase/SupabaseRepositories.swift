@@ -186,7 +186,7 @@ final class SupabaseProfileRepository: ProfileRepository {
     private let storage: SupabaseStorageClient
     private let config: SupabaseConfig
     private let sessionProvider: () -> SupabaseSession?
-    private let keychainService = "BirthPrepPro.Supabase"
+    private let keychainService = "DoulaFlow.Supabase"
     private let keychainAccount = "public_profile_token"
 
     init(http: SupabaseHTTPClient, storage: SupabaseStorageClient, config: SupabaseConfig, sessionProvider: @escaping () -> SupabaseSession?) {
@@ -415,12 +415,15 @@ final class SupabaseRecommendationsRepository: RecommendationsRepository {
         let contentType = mimeType(for: fileURL)
         try await storage.upload(bucket: attachmentsBucket, path: path, data: data, contentType: contentType, accessToken: session.accessToken, upsert: true)
         let url = storage.publicObjectURL(bucket: attachmentsBucket, path: path)
-        return RecommendationAttachment(id: attachmentId, fileName: fileName, url: url, type: attachmentType(for: fileURL))
+        return RecommendationAttachment(id: attachmentId, fileName: fileName, url: url, type: attachmentType(for: fileURL), storagePath: path)
     }
 
-    func deleteAttachment(clientId: UUID, attachmentId: UUID) async throws {
-        // Optional for MVP: implement Storage delete.
-        // We still remove it from the recommendation payload.
+    func deleteAttachment(clientId: UUID, attachment: RecommendationAttachment) async throws {
+        guard let session = sessionProvider() else { throw RepositoryError(message: "Not authenticated") }
+        guard let path = attachment.storagePath ?? storage.path(fromPublicObjectURL: attachment.url, bucket: attachmentsBucket) else {
+            throw RepositoryError(message: "Unable to determine storage path for attachment")
+        }
+        try await storage.delete(bucket: attachmentsBucket, path: path, accessToken: session.accessToken)
     }
 
     private func attachmentType(for url: URL) -> RecommendationAttachment.AttachmentType {
@@ -471,6 +474,22 @@ final class SupabasePublicLinkRepository: PublicLinkRepository {
         self.recommendationsRepository = recommendationsRepository
         self.sessionProvider = sessionProvider
         self.config = config
+    }
+
+    func fetchActiveLink(for clientId: UUID) async throws -> PublicLink? {
+        guard let session = sessionProvider() else { throw RepositoryError(message: "Not authenticated") }
+
+        let query = [
+            URLQueryItem(name: "select", value: "*"),
+            URLQueryItem(name: "client_id", value: "eq.\(clientId.uuidString)"),
+            URLQueryItem(name: "disabled", value: "is.false"),
+            URLQueryItem(name: "order", value: "created_at.desc"),
+            URLQueryItem(name: "limit", value: "1")
+        ]
+        let (data, _) = try await http.request(.get, path: "/rest/v1/public_links", query: query, accessToken: session.accessToken)
+        let rows = try JSONDecoder.postgrest.decode([DBPublicLink].self, from: data)
+        guard let row = rows.first else { return nil }
+        return PublicLink(db: row)
     }
 
     func generateLink(for clientId: UUID) async throws -> PublicLink {

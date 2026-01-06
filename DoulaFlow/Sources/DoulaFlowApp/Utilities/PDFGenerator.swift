@@ -16,12 +16,12 @@ enum PDFGenerator {
         )
     }
 
-    static func makeProfilePDF(profile: DoulaProfile, appName: String = "BirthPrep Pro") throws -> URL {
+    static func makeProfilePDF(profile: DoulaProfile, appName: String = "DoulaFlow") throws -> URL {
         let fileURL = FileManager.default.temporaryDirectory
-            .appendingPathComponent("birthprep-profile-\(safeFileComponent(profile.fullName)).pdf")
+            .appendingPathComponent("doulaflow-profile-\(safeFileComponent(profile.fullName)).pdf")
         try render(to: fileURL, layout: .a4) { context, layout in
             let styles = Styles()
-            var cursor = Cursor(layout: layout)
+            var cursor = Cursor(layout: layout, appName: appName)
 
             drawHeader(appName: appName, title: "Doula Profile", context: context, styles: styles, cursor: &cursor)
 
@@ -45,12 +45,12 @@ enum PDFGenerator {
         return fileURL
     }
 
-    static func makeClientProfilePDF(client: Client, appName: String = "BirthPrep Pro") throws -> URL {
+    static func makeClientProfilePDF(client: Client, appName: String = "DoulaFlow") throws -> URL {
         let fileURL = FileManager.default.temporaryDirectory
-            .appendingPathComponent("birthprep-client-\(safeFileComponent(client.name)).pdf")
+            .appendingPathComponent("doulaflow-client-\(safeFileComponent(client.name)).pdf")
         try render(to: fileURL, layout: .a4) { context, layout in
             let styles = Styles()
-            var cursor = Cursor(layout: layout)
+            var cursor = Cursor(layout: layout, appName: appName)
 
             drawHeader(appName: appName, title: "Client Profile", context: context, styles: styles, cursor: &cursor)
 
@@ -71,12 +71,12 @@ enum PDFGenerator {
         return fileURL
     }
 
-    static func makeBirthPlanPDF(plan: BirthPlan, appName: String = "BirthPrep Pro") throws -> URL {
+    static func makeBirthPlanPDF(plan: BirthPlan, appName: String = "DoulaFlow") throws -> URL {
         let fileURL = FileManager.default.temporaryDirectory
-            .appendingPathComponent("birthprep-birthplan-\(plan.clientId.uuidString).pdf")
+            .appendingPathComponent("doulaflow-birthplan-\(plan.clientId.uuidString).pdf")
         try render(to: fileURL, layout: .a4) { context, layout in
             let styles = Styles()
-            var cursor = Cursor(layout: layout)
+            var cursor = Cursor(layout: layout, appName: appName)
 
             drawHeader(appName: appName, title: "Birth Plan", context: context, styles: styles, cursor: &cursor)
             cursor.writeKeyValue("Updated", DateFormatter.pdfDateTime.string(from: plan.updatedAt), styles: styles)
@@ -150,10 +150,12 @@ private extension PDFGenerator {
 
     struct Cursor {
         let layout: Layout
+        let appName: String
         var y: CGFloat
 
-        init(layout: Layout) {
+        init(layout: Layout, appName: String) {
             self.layout = layout
+            self.appName = appName
             self.y = layout.contentRect.minY
         }
 
@@ -255,7 +257,7 @@ private extension PDFGenerator {
             if y + minHeight > layout.contentRect.maxY {
                 context.beginPage()
                 y = layout.contentRect.minY
-                writeTopHeader("BirthPrep Pro", styles: styles)
+                writeTopHeader(appName, styles: styles)
                 writeDivider(styles: styles)
             }
         }
