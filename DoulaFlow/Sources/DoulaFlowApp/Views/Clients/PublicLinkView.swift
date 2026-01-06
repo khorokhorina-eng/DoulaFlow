@@ -36,9 +36,7 @@ struct PublicLinkView: View {
             }
         }
         .task {
-            if viewModel.activeLink == nil {
-                await viewModel.generate()
-            }
+            await viewModel.load()
         }
         .alert("Error", isPresented: Binding(
             get: { viewModel.errorMessage != nil },

@@ -24,10 +24,11 @@ protocol RecommendationsRepository {
     func fetchRecommendations(for clientId: UUID) async throws -> Recommendation
     func saveRecommendation(_ recommendation: Recommendation) async throws -> Recommendation
     func uploadAttachment(clientId: UUID, fileURL: URL) async throws -> RecommendationAttachment
-    func deleteAttachment(clientId: UUID, attachmentId: UUID) async throws
+    func deleteAttachment(clientId: UUID, attachment: RecommendationAttachment) async throws
 }
 
 protocol PublicLinkRepository {
+    func fetchActiveLink(for clientId: UUID) async throws -> PublicLink?
     func generateLink(for clientId: UUID) async throws -> PublicLink
     func revokeLink(_ linkId: UUID) async throws
 }

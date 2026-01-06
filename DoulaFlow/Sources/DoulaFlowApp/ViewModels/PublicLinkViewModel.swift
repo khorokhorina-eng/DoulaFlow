@@ -14,6 +14,16 @@ final class PublicLinkViewModel: ObservableObject {
         self.clientId = clientId
     }
 
+    func load() async {
+        isProcessing = true
+        defer { isProcessing = false }
+        do {
+            activeLink = try await repository.fetchActiveLink(for: clientId)
+        } catch {
+            errorMessage = error.localizedDescription
+        }
+    }
+
     func generate() async {
         isProcessing = true
         defer { isProcessing = false }

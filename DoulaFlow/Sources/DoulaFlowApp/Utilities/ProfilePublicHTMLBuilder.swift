@@ -16,7 +16,12 @@ enum ProfilePublicHTMLBuilder {
             .joined(separator: "\n")
 
         let websiteHTML = website.isEmpty ? "" : "<p><strong>Website:</strong> <a href=\"\(escape(website))\">\(escape(website))</a></p>"
-        let certHTML = certs.isEmpty ? "" : "<h2>Certifications</h2><ul>\(certs)</ul>"
+        let certCardHTML = certs.isEmpty ? "" : """
+        <div class="card">
+          <h2>Certifications</h2>
+          <ul>\(certs)</ul>
+        </div>
+        """
 
         return """
         <!doctype html>
@@ -25,7 +30,7 @@ enum ProfilePublicHTMLBuilder {
           <meta charset="utf-8" />
           <meta name="viewport" content="width=device-width, initial-scale=1" />
           <meta name="robots" content="noindex,nofollow,noarchive" />
-          <title>\(name) • BirthPrep Pro</title>
+          <title>\(name) • DoulaFlow</title>
           <style>
             :root { color-scheme: light dark; }
             body { margin: 0; font-family: -apple-system, system-ui, Segoe UI, Roboto, Helvetica, Arial, sans-serif; background: #f6f6f8; color: #111; }
@@ -50,7 +55,7 @@ enum ProfilePublicHTMLBuilder {
         <body>
           <div class="wrap">
             <header>
-              <div class="brand">BirthPrep Pro</div>
+              <div class="brand">DoulaFlow</div>
               <h1>\(name)</h1>
               <p class="subtitle">\(title)</p>
               <p class="subtitle">\(exp)</p>
@@ -68,9 +73,7 @@ enum ProfilePublicHTMLBuilder {
               \(websiteHTML)
             </div>
 
-            <div class="card">
-              \(certHTML)
-            </div>
+            \(certCardHTML)
           </div>
         </body>
         </html>

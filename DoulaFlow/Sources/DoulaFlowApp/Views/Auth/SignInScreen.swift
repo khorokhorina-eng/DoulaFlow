@@ -9,7 +9,7 @@ struct SignInScreen: View {
         NavigationStack {
             VStack(spacing: 16) {
                 VStack(spacing: 6) {
-                    Text("BirthPrep Pro")
+                    Text("DoulaFlow")
                         .font(.title.bold())
                     Text("Sign in to sync your clients and share public links.")
                         .font(.subheadline)
