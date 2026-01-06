@@ -27,7 +27,7 @@
 - **Language/Frameworks**: Swift 5.9+, SwiftUI, Combine, PDFKit, UniformTypeIdentifiers, QuickLook for previews.
 - **Backend**: Supabase (managed Postgres + Row Level Security + Storage + Edge Functions). Auth uses email+password for doulas; clients only use token links.
 - **3rd-Party SDKs**: `SwiftSoup` (HTML sanitization for rich text), `PhotosUI` for picking profile photos, `FirebaseCrashlytics` (optional) for crash reporting.
-- **Build Targets**: iOS 15+. Deployment through Xcode project `DoulaFlow.xcodeproj` with Swift Package Manager for dependencies.
+- **Build Targets**: iOS 16+. Open `DoulaFlow/Package.swift` in Xcode (15+) to build and run on iOS simulators.
 
 ## 4. App Architecture
 - **Entry Point**: `DoulaFlowApp` bootstraps Supabase client, loads persisted session, and injects dependencies via `@Environment(\.services)`.
