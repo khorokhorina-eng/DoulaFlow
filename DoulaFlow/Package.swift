@@ -14,7 +14,7 @@ let package = Package(
         )
     ],
     dependencies: [
-        .package(url: "https://github.com/supabase-community/supabase-swift", from: "0.4.1"),
+        .package(url: "https://github.com/supabase-community/supabase-swift", from: "2.40.0"),
         .package(url: "https://github.com/scinfu/SwiftSoup", from: "2.6.0")
     ],
     targets: [
