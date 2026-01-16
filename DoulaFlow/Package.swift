@@ -6,7 +6,7 @@ let package = Package(
     defaultLocalization: "en",
     platforms: [
         .iOS(.v16),
-        .macOS(.v10_15)
+        .macOS(.v12)
     ],
     products: [
         .executable(
