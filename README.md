@@ -10,7 +10,7 @@ MVP SwiftUI + Supabase application that lets doulas manage profiles, clients, bi
 
 ## Getting Started
 1. Open Xcode 15+, choose **File → Open**, select the `DoulaFlow/Package.swift` file to generate the project.
-2. Add your Supabase project URL + anon key to `DoulaFlow/Sources/DoulaFlowApp/Resources/Info.plist` (and adjust the bundle identifier if you plan to run on device).
+2. Add your Supabase project URL + anon key to `DoulaFlow/Sources/DoulaFlowApp/Info.plist` (and adjust the bundle identifier if you plan to run on device).
 3. Build & run the `DoulaFlow` scheme on iOS 16+ simulators.
 
 ## Next Steps
