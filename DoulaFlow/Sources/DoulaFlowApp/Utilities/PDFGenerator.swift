@@ -1,3 +1,4 @@
+#if canImport(UIKit)
 import Foundation
 import UIKit
 
@@ -280,3 +281,24 @@ private extension DateFormatter {
     }()
 }
 
+#else
+import Foundation
+
+enum PDFGenerator {
+    enum PDFError: Error {
+        case unsupportedPlatform
+    }
+
+    static func makeProfilePDF(profile: DoulaProfile, appName: String = "DoulaFlow") throws -> URL {
+        throw PDFError.unsupportedPlatform
+    }
+
+    static func makeClientProfilePDF(client: Client, appName: String = "DoulaFlow") throws -> URL {
+        throw PDFError.unsupportedPlatform
+    }
+
+    static func makeBirthPlanPDF(plan: BirthPlan, appName: String = "DoulaFlow") throws -> URL {
+        throw PDFError.unsupportedPlatform
+    }
+}
+#endif
