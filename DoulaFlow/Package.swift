@@ -24,9 +24,8 @@ let package = Package(
                 .product(name: "Supabase", package: "supabase-swift"),
                 "SwiftSoup"
             ],
-            path: "Sources",
             resources: [
-                .process("DoulaFlowApp/Resources")
+                .process("Resources")
             ]
         ),
         .testTarget(
